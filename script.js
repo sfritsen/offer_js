@@ -1,12 +1,13 @@
 import {data_internet} from './data/internet.js';
 
-// Test data
-// const data_internet = [
-//     { id: 'hs1', description: 'Internet 1', cost: 50 },
-//     { id: 'hs2', description: 'Internet 2', cost: 60 }
-// ];
+// Listen for form changes
+document.getElementById("tool_form").addEventListener("change", processForm);
 
-
+// Process form changes
+function processForm() {
+    var internet = document.getElementById("internet").value
+    processInternet(internet);
+}
 
 /**
  * **********************************************************
@@ -28,7 +29,17 @@ import {data_internet} from './data/internet.js';
  * INTERNET
  * **********************************************************
  */
-console.log(data_internet.id)
+function processInternet(val) {
+    
+    // Find selected internet from data object
+    const int_obj = data_internet.find(obj => obj.id == val)
+
+    const int_description = int_obj.description
+    const int_cost_base = int_obj.base_cost
+
+    console.log(int_description)
+}
+
 /**
  * **********************************************************
  * TOTAL COST
