@@ -39,3 +39,7 @@ select {
 .error_text {
     color: orangered;
 }
+
+.box_wrapper {
+    border: 3px solid cyan;
+}
