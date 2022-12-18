@@ -14,8 +14,6 @@ function processChange() {
 
     // Build output
     output.innerHTML += processInternet(internet);
-    // output.innerHTML += testinfo;
-    // output.innerHTML += build_box();
 }
 
 /**
@@ -32,7 +30,8 @@ function build_box(title, desc, base_cost) {
             <div class="box_title">${title}</div>
             <table>
                 <tr>
-                    <tb>${desc}</td>
+                    <td>${desc}</td>
+                    <td align="right">${base_cost}</td>
                 </tr>
             </table>
         </div>

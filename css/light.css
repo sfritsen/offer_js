@@ -41,5 +41,11 @@ select {
 }
 
 .box_wrapper {
-    border: 3px solid cyan;
+    border-radius: 4px;
+    border: 1px solid grey;
+    padding: 6px;
+}
+.box_wrapper table {
+    margin: 0;
+    width: 100%;
 }
