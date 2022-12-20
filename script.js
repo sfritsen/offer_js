@@ -30,11 +30,16 @@ document.getElementById("tool_form").addEventListener("change", e => {
  * **********************************************************
  * FUNCTIONS
  * **********************************************************
- * 1. build box
- * 2. build row
- * 3. format $ numerical values
+ * format $ numerical values
  */
-function build_box(title, desc, base_cost, discounted_cost, subtotal) {
+function build_box(title, desc, base_cost, disc_array, subtotal) {
+
+    // Loop through the discounts array
+    let discounts = [];
+    disc_array.forEach(disc_row => {
+        discounts += disc_row;
+    })
+
     const service = `
         <div class="box_wrapper">
             <div class="box_title">${title}</div>
@@ -43,14 +48,27 @@ function build_box(title, desc, base_cost, discounted_cost, subtotal) {
                     <td>${desc}</td>
                     <td align="right">$${base_cost}</td>
                 </tr>
+                ${discounts}
                 <tr>
                     <td>Subtotal</td>
-                    <td align="right">$${discounted_cost}</td>
+                    <td align="right">$${subtotal}</td>
                 </tr>
             </table>
         </div>
     `;
+
     return service;
+}
+
+function build_row(desc, price) {
+    const row = `
+        <tr class="discount">
+            <td>${desc}</td>
+            <td align="right">${price}</td>
+        </tr>
+    `;
+
+    return row;
 }
 
 /**
@@ -63,9 +81,11 @@ function processPromotion() {
     const promo_obj = data_promotions.find(obj => obj.id == promotion);
     
     const promo_description = promo_obj.description;
-    const promo_discount = promo_obj.discount;
-    // const promo_discount = 5;
+    let promo_discount = promo_obj.discount;
 
+    if (promo_discount == 0 || promo_discount == null || promo_discount == undefined) {
+        promo_discount = 0;
+    }
     return promo_discount;
 }
 
@@ -78,16 +98,22 @@ function processInternet() {
     // Get selected item
     const internet = document.getElementById("internet").value;
 
+    // Start discount and promo array
+    let int_list_array = [];
+
     // Find selected item from data array
     const int_obj = data_internet.find(obj => obj.id == internet);
 
-    // Build box
+    // Add to discounts and promos array
+    int_list_array.push(build_row('Promo Discount', processPromotion()));
+
+    // Build box (title, base cost, discount array, subtotal)
     output.innerHTML += build_box(
         'Internet', 
         int_obj.description, 
         int_obj.base_cost, 
-        int_obj.base_cost - processPromotion(), 
-        0
+        int_list_array,
+        int_obj.base_cost - processPromotion()
     );    
 
     // Add values to total arrays
