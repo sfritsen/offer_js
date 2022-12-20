@@ -1,6 +1,16 @@
 import {data_promotions} from './data/promotions.js';
 import {data_internet} from './data/internet.js';
 
+// Load selects from data folder
+const selPromotions = document.getElementById("promotion");
+data_promotions.forEach((value, key) => {
+    selPromotions[key] = new Option(value.description, value.id);
+})
+const selInternet = document.getElementById("internet");
+data_internet.forEach((value, key) => {
+    selInternet[key] = new Option(value.description, value.id);
+});
+
 // Start total arrays
 const offer_base_cost = [];
 const offer_discounts = [];
@@ -13,8 +23,7 @@ document.getElementById("tool_form").addEventListener("change", e => {
     output.innerHTML = "";
 
     // Process sections
-    const internet = document.getElementById("internet").value;
-    processInternet(internet);   
+    processInternet();   
 });
 
 /**
@@ -32,11 +41,11 @@ function build_box(title, desc, base_cost, discounted_cost, subtotal) {
             <table>
                 <tr>
                     <td>${desc}</td>
-                    <td align="right">${base_cost}</td>
+                    <td align="right">$${base_cost}</td>
                 </tr>
                 <tr>
-                    <td>Discounted</td>
-                    <td align="right">${discounted_cost}</td>
+                    <td>Subtotal</td>
+                    <td align="right">$${discounted_cost}</td>
                 </tr>
             </table>
         </div>
@@ -50,11 +59,12 @@ function build_box(title, desc, base_cost, discounted_cost, subtotal) {
  * **********************************************************
  */
 function processPromotion() {
-    // const promo_obj = data_promotions.find(obj => obj.id == val);
+    const promotion = document.getElementById("promotion").value;
+    const promo_obj = data_promotions.find(obj => obj.id == promotion);
     
-    // const promo_description = promo_obj.description;
-    // const promo_discount = promo.obj.discount;
-    const promo_discount = 5;
+    const promo_description = promo_obj.description;
+    const promo_discount = promo_obj.discount;
+    // const promo_discount = 5;
 
     return promo_discount;
 }
@@ -64,26 +74,25 @@ function processPromotion() {
  * INTERNET
  * **********************************************************
  */
-function processInternet(val) {
-    
-    // Find selected internet from data object
-    const int_obj = data_internet.find(obj => obj.id == val);
+function processInternet() {
+    // Get selected item
+    const internet = document.getElementById("internet").value;
 
-    // Set variables
-    const int_description = int_obj.description;
-    const int_cost_base = int_obj.base_cost;
-    const int_tech_stack = int_obj.tech;
-    const int_cost_discounted = int_cost_base - processPromotion();
-
-    // Add values to total arrays
-    offer_base_cost.push(int_cost_base);
+    // Find selected item from data array
+    const int_obj = data_internet.find(obj => obj.id == internet);
 
     // Build box
-    output.innerHTML += build_box('Internet', int_description, int_cost_base, int_cost_discounted, 0);
-    output.innerHTML += 'BASE COST = '+offer_base_cost;
+    output.innerHTML += build_box(
+        'Internet', 
+        int_obj.description, 
+        int_obj.base_cost, 
+        int_obj.base_cost - processPromotion(), 
+        0
+    );    
 
-    const sum = [1, 2, 3].reduce((partialSum, a) => partialSum + a, 0);
-    console.log('SUM = '+sum);
+    // Add values to total arrays
+    offer_base_cost.push(int_obj.base_cost);
+    offer_discounts.push(processPromotion());
 }
 
 /**
@@ -91,6 +100,9 @@ function processInternet(val) {
  * TOTAL COST
  * **********************************************************
  */
+// output.innerHTML += 'BASE COST = ?';
+// const sum = [1, 2, 3, 4].reduce((partialSum, a) => partialSum + a, 0);
+// console.log('SUM = '+sum);
 
 /**
  * **********************************************************
