@@ -1,8 +1,4 @@
-/* @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,700;1,400&display=swap'); */
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=Open+Sans:wght@400;700&display=swap');
-
-/* font-family: 'IBM Plex Mono', monospace; 
-font-family: 'Open Sans', sans-serif;*/
 
 :root {
     --dark: #191B22;
@@ -24,22 +20,14 @@ body {
 /* Nav Bar */
 nav {
     background: var(--medium);
-    /* border-bottom: 1px solid var(--medium); */
     color: var(--font-color);
     font-size: 1.5rem;
     padding: 16px;
 }
 
 /* Panels */
-.panel_left,
-.panel_right {
+.panel {
     padding: 15px;
-}
-.panel_left {
-    border-right: 1px solid var(--medium);
-}
-.panel_right {
-    border-left: 1px solid var(--medium);
 }
 
 .box_wrapper {
