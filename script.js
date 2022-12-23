@@ -2,20 +2,6 @@ import {data_promotions} from './data/promotions.js';
 import {data_internet} from './data/internet.js';
 import {data_tv} from './data/tv.js';
 
-// Load selects from data folder
-const selPromotions = document.getElementById("promotion");
-data_promotions.forEach((value, key) => {
-    selPromotions[key] = new Option(value.description, value.id);
-})
-const selInternet = document.getElementById("internet");
-data_internet.forEach((value, key) => {
-    selInternet[key] = new Option(value.description, value.id);
-});
-const selTv = document.getElementById("tv");
-data_tv.forEach((value, key) => {
-    selTv[key] = new Option(value.description, value.id);
-});
-
 // Initialize arrays
 let offer_base_cost = [];
 let offer_discounts = [];
@@ -71,7 +57,6 @@ function build_box(title, desc, base_cost, disc_array, subtotal) {
 
     return service;
 }
-
 function build_row(desc, price) {
     const row = `
         <tr class="discount">
@@ -81,6 +66,12 @@ function build_row(desc, price) {
     `;
 
     return row;
+}
+function get_product(id, array) {
+    return array.find(obj => obj.id == id);
+}
+function sum_array(array) {
+    return array.reduce((partialSum, a) => partialSum + a, 0);
 }
 
 /**
@@ -109,13 +100,16 @@ function process_internet() {
     // Get selected item
     const internet = document.getElementById("internet").value;
 
+    // Bypass if no internet is selected
+    if (internet == 'no_internet') return;
+
     // Start discount and promo array
     let int_list_array = [];
     let int_cost_array = [];
     let int_discount_array = [];
 
     // Find selected item from data array
-    const int_obj = data_internet.find(obj => obj.id == internet);
+    const int_obj = get_product(internet, data_internet);
 
     // Add to discounts and promos array
     int_list_array.push(build_row('Promo Discount', process_promotion()));
@@ -132,8 +126,8 @@ function process_internet() {
     );
 
     // Calculate section totals
-    const sum_int_base_cost = int_cost_array.reduce((partialSum, a) => partialSum + a, 0);
-    const sum_int_discounts = int_discount_array.reduce((partialSum, a) => partialSum + a, 0);
+    const sum_int_base_cost = sum_array(int_cost_array);
+    const sum_int_discounts = sum_array(int_discount_array);
 
     // Add values to total arrays
     offer_base_cost.push(sum_int_base_cost);
@@ -144,11 +138,14 @@ function process_internet() {
 function process_tv() {
     const tv = document.getElementById("tv").value;
 
+    // Bypass if no internet is selected
+    if (tv == 'no_tv') return;
+
     let tv_list_array = [];
     let tv_cost_array = [];
     let tv_discount_array = [];
 
-    const tv_obj = data_tv.find(obj => obj.id == tv);
+    const tv_obj = get_product(tv, data_tv);
 
     tv_list_array.push(build_row('Promo Discount', process_promotion()));
     tv_cost_array.push(tv_obj.base_cost);
@@ -162,8 +159,8 @@ function process_tv() {
         tv_obj.base_cost - process_promotion()
     );
 
-    const sum_tv_base_cost = tv_cost_array.reduce((partialSum, a) => partialSum + a, 0);
-    const sum_tv_discounts = tv_discount_array.reduce((partialSum, a) => partialSum + a, 0);
+    const sum_tv_base_cost = sum_array(tv_cost_array);
+    const sum_tv_discounts = sum_array(tv_discount_array);
 
     // Add values to total arrays
     offer_base_cost.push(sum_tv_base_cost);
@@ -177,9 +174,9 @@ function process_tv() {
  * **********************************************************
  */
 function calc_totals() {
-    const sum_base_cost = offer_base_cost.reduce((partialSum, a) => partialSum + a, 0);
-    const sum_discounts = offer_discounts.reduce((partialSum, a) => partialSum + a, 0);
-    const sum_total = offer_total.reduce((partialSum, a) => partialSum + a, 0);
+    const sum_base_cost = sum_array(offer_base_cost);
+    const sum_discounts = sum_array(offer_discounts);
+    const sum_total = sum_array(offer_total);
 
     output.innerHTML += `
         <div class="box_wrapper">
@@ -200,7 +197,7 @@ function calc_totals() {
                 </tr>
             </table>
         </div>`
-};
+}
 
 /**
  * **********************************************************
