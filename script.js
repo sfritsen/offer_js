@@ -1,5 +1,6 @@
 import {data_promotions} from './data/promotions.js';
 import {data_internet} from './data/internet.js';
+import {data_tv} from './data/tv.js';
 
 // Load selects from data folder
 const selPromotions = document.getElementById("promotion");
@@ -9,6 +10,10 @@ data_promotions.forEach((value, key) => {
 const selInternet = document.getElementById("internet");
 data_internet.forEach((value, key) => {
     selInternet[key] = new Option(value.description, value.id);
+});
+const selTv = document.getElementById("tv");
+data_tv.forEach((value, key) => {
+    selTv[key] = new Option(value.description, value.id);
 });
 
 // Initialize arrays
@@ -29,6 +34,7 @@ document.getElementById("tool_form").addEventListener("change", e => {
 
     // Process sections
     process_internet();
+    process_tv();
     calc_totals();
 });
 
@@ -133,6 +139,36 @@ function process_internet() {
     offer_base_cost.push(sum_int_base_cost);
     offer_discounts.push(sum_int_discounts);
     offer_total.push(sum_int_base_cost - sum_int_discounts);
+}
+
+function process_tv() {
+    const tv = document.getElementById("tv").value;
+
+    let tv_list_array = [];
+    let tv_cost_array = [];
+    let tv_discount_array = [];
+
+    const tv_obj = data_tv.find(obj => obj.id == tv);
+
+    tv_list_array.push(build_row('Promo Discount', process_promotion()));
+    tv_cost_array.push(tv_obj.base_cost);
+    tv_discount_array.push(process_promotion());
+
+    output.innerHTML += build_box(
+        'TV',
+        tv_obj.description,
+        tv_obj.base_cost,
+        tv_list_array,
+        tv_obj.base_cost - process_promotion()
+    );
+
+    const sum_tv_base_cost = tv_cost_array.reduce((partialSum, a) => partialSum + a, 0);
+    const sum_tv_discounts = tv_discount_array.reduce((partialSum, a) => partialSum + a, 0);
+
+    // Add values to total arrays
+    offer_base_cost.push(sum_tv_base_cost);
+    offer_discounts.push(sum_tv_discounts);
+    offer_total.push(sum_tv_base_cost - sum_tv_discounts);
 }
 
 /**
