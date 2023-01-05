@@ -1,6 +1,6 @@
-import {data_promotions} from './data/promotions.js';
-import {data_internet} from './data/internet.js';
-import {data_tv} from './data/tv.js';
+import { data_internet } from './data/internet.js';
+import { data_promotions } from './data/promotions.js';
+import { data_tv } from './data/tv.js';
 
 // Initialize arrays
 let offer_base_cost = [];
@@ -8,20 +8,20 @@ let offer_discounts = [];
 let offer_total = [];
 
 // Listen for form changes
-document.getElementById("tool_form").addEventListener("change", e => {
-    // Grab the output container and clear it
-    const output = document.getElementById("output");
-    output.innerHTML = "";
+document.getElementById('tool_form').addEventListener('change', (e) => {
+	// Grab the output container and clear it
+	const output = document.getElementById('output');
+	output.innerHTML = '';
 
-    // Clear arrays to reset totals
-    offer_base_cost.length = 0;
-    offer_discounts.length = 0;
-    offer_total.length = 0;
+	// Clear arrays to reset totals
+	offer_base_cost.length = 0;
+	offer_discounts.length = 0;
+	offer_total.length = 0;
 
-    // Process sections
-    process_internet();
-    process_tv();
-    calc_totals();
+	// Process sections
+	process_internet();
+	process_tv();
+	calc_totals();
 });
 
 /**
@@ -31,14 +31,13 @@ document.getElementById("tool_form").addEventListener("change", e => {
  * format $ numerical values
  */
 function build_box(title, desc, base_cost, disc_array, subtotal) {
+	// Loop through the discounts array
+	let discounts = [];
+	disc_array.forEach((disc_row) => {
+		discounts += disc_row;
+	});
 
-    // Loop through the discounts array
-    let discounts = [];
-    disc_array.forEach(disc_row => {
-        discounts += disc_row;
-    })
-
-    const service = `
+	const service = `
         <div class="box_wrapper">
             <div class="box_title">${title}</div>
             <table>
@@ -55,23 +54,29 @@ function build_box(title, desc, base_cost, disc_array, subtotal) {
         </div>
     `;
 
-    return service;
+	return service;
 }
+
+// Builds table row for supplied parameters
 function build_row(desc, price) {
-    const row = `
+	const row = `
         <tr class="discount">
             <td>${desc}</td>
             <td align="right">${price}</td>
         </tr>
     `;
 
-    return row;
+	return row;
 }
+
+// Gets the product details
 function get_product(id, array) {
-    return array.find(obj => obj.id == id);
+	return array.find((obj) => obj.id == id);
 }
+
+// Simple sum array
 function sum_array(array) {
-    return array.reduce((partialSum, a) => partialSum + a, 0);
+	return array.reduce((partialSum, a) => partialSum + a, 0);
 }
 
 /**
@@ -80,15 +85,19 @@ function sum_array(array) {
  * **********************************************************
  */
 function process_promotion() {
-    const promotion = document.getElementById("promotion").value;
-    const promo_obj = data_promotions.find(obj => obj.id == promotion);
-    
-    const promo_description = promo_obj.description;
+	const promotion = document.getElementById('promotion').value;
+	const promo_obj = data_promotions.find((obj) => obj.id == promotion);
 
-    if (promo_obj.discount == 0 || promo_obj.discount == null || promo_obj.discount == undefined) {
-        promo_obj.discount = 0;
-    }
-    return promo_obj.discount;
+	const promo_description = promo_obj.description;
+
+	if (
+		promo_obj.discount == 0 ||
+		promo_obj.discount == null ||
+		promo_obj.discount == undefined
+	) {
+		promo_obj.discount = 0;
+	}
+	return promo_obj.discount;
 }
 
 /**
@@ -97,75 +106,75 @@ function process_promotion() {
  * **********************************************************
  */
 function process_internet() {
-    // Get selected item
-    const internet = document.getElementById("internet").value;
+	// Get selected item
+	const internet = document.getElementById('internet').value;
 
-    // Bypass if no internet is selected
-    if (internet == 'no_internet') return;
+	// Bypass if no internet is selected
+	if (internet == 'no_internet') return;
 
-    // Start discount and promo array
-    let int_list_array = [];
-    let int_cost_array = [];
-    let int_discount_array = [];
+	// Start discount and promo array
+	let int_list_array = [];
+	let int_cost_array = [];
+	let int_discount_array = [];
 
-    // Find selected item from data array
-    const int_obj = get_product(internet, data_internet);
+	// Find selected item from data array
+	const int_obj = get_product(internet, data_internet);
 
-    // Add to discounts and promos array
-    int_list_array.push(build_row('Promo Discount', process_promotion()));
-    int_cost_array.push(int_obj.base_cost);
-    int_discount_array.push(process_promotion());
+	// Add to discounts and promos array
+	int_list_array.push(build_row('Promo Discount', process_promotion()));
+	int_cost_array.push(int_obj.base_cost);
+	int_discount_array.push(process_promotion());
 
-    // Build box (title, base cost, discount array, subtotal)
-    output.innerHTML += build_box(
-        'Internet', 
-        int_obj.description, 
-        int_obj.base_cost, 
-        int_list_array,
-        int_obj.base_cost - process_promotion()
-    );
+	// Build box (title, base cost, discount array, subtotal)
+	output.innerHTML += build_box(
+		'Internet',
+		int_obj.description,
+		int_obj.base_cost,
+		int_list_array,
+		int_obj.base_cost - process_promotion()
+	);
 
-    // Calculate section totals
-    const sum_int_base_cost = sum_array(int_cost_array);
-    const sum_int_discounts = sum_array(int_discount_array);
+	// Calculate section totals
+	const sum_int_base_cost = sum_array(int_cost_array);
+	const sum_int_discounts = sum_array(int_discount_array);
 
-    // Add values to total arrays
-    offer_base_cost.push(sum_int_base_cost);
-    offer_discounts.push(sum_int_discounts);
-    offer_total.push(sum_int_base_cost - sum_int_discounts);
+	// Add values to total arrays
+	offer_base_cost.push(sum_int_base_cost);
+	offer_discounts.push(sum_int_discounts);
+	offer_total.push(sum_int_base_cost - sum_int_discounts);
 }
 
 function process_tv() {
-    const tv = document.getElementById("tv").value;
+	const tv = document.getElementById('tv').value;
 
-    // Bypass if no internet is selected
-    if (tv == 'no_tv') return;
+	// Bypass if no internet is selected
+	if (tv == 'no_tv') return;
 
-    let tv_list_array = [];
-    let tv_cost_array = [];
-    let tv_discount_array = [];
+	let tv_list_array = [];
+	let tv_cost_array = [];
+	let tv_discount_array = [];
 
-    const tv_obj = get_product(tv, data_tv);
+	const tv_obj = get_product(tv, data_tv);
 
-    tv_list_array.push(build_row('Promo Discount', process_promotion()));
-    tv_cost_array.push(tv_obj.base_cost);
-    tv_discount_array.push(process_promotion());
+	tv_list_array.push(build_row('Promo Discount', process_promotion()));
+	tv_cost_array.push(tv_obj.base_cost);
+	tv_discount_array.push(process_promotion());
 
-    output.innerHTML += build_box(
-        'TV',
-        tv_obj.description,
-        tv_obj.base_cost,
-        tv_list_array,
-        tv_obj.base_cost - process_promotion()
-    );
+	output.innerHTML += build_box(
+		'TV',
+		tv_obj.description,
+		tv_obj.base_cost,
+		tv_list_array,
+		tv_obj.base_cost - process_promotion()
+	);
 
-    const sum_tv_base_cost = sum_array(tv_cost_array);
-    const sum_tv_discounts = sum_array(tv_discount_array);
+	const sum_tv_base_cost = sum_array(tv_cost_array);
+	const sum_tv_discounts = sum_array(tv_discount_array);
 
-    // Add values to total arrays
-    offer_base_cost.push(sum_tv_base_cost);
-    offer_discounts.push(sum_tv_discounts);
-    offer_total.push(sum_tv_base_cost - sum_tv_discounts);
+	// Add values to total arrays
+	offer_base_cost.push(sum_tv_base_cost);
+	offer_discounts.push(sum_tv_discounts);
+	offer_total.push(sum_tv_base_cost - sum_tv_discounts);
 }
 
 /**
@@ -174,11 +183,11 @@ function process_tv() {
  * **********************************************************
  */
 function calc_totals() {
-    const sum_base_cost = sum_array(offer_base_cost);
-    const sum_discounts = sum_array(offer_discounts);
-    const sum_total = sum_array(offer_total);
+	const sum_base_cost = sum_array(offer_base_cost);
+	const sum_discounts = sum_array(offer_discounts);
+	const sum_total = sum_array(offer_total);
 
-    output.innerHTML += `
+	output.innerHTML += `
         <div class="box_wrapper">
             <div class="box_title">Your Offer</div>
             <div class="warning_text">Verify discounts and promo stackability before offering</div>
@@ -196,7 +205,7 @@ function calc_totals() {
                     <td align="right" class="number">$${sum_total}</td>
                 </tr>
             </table>
-        </div>`
+        </div>`;
 }
 
 /**
